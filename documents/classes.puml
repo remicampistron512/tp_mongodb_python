@@ -1,0 +1,40 @@
+@startuml
+
+enum OperationStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+class Customer {
+  - firstName : String
+  - lastName : String
+  - email : String
+}
+
+class Account {
+  - accountNumber : String
+  - balance : BigDecimal
+  - overdraftLimit : BigDecimal
+  - dailyWithdrawalLimit : BigDecimal
+}
+
+abstract class Operation {
+  - amount : BigDecimal
+  - status : OperationStatus
+  - date : Date
+}
+
+class Deposit
+class Withdrawal
+class Transfer
+
+Customer "1" -- "1..*" Account : owns >
+
+Account "1" o-- "0..*" Operation : history >
+
+Operation <|-- Deposit
+Operation <|-- Withdrawal
+Operation <|-- Transfer
+
+@enduml
