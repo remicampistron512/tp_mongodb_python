@@ -16,11 +16,12 @@ def print_dev_menu() -> None:
 
 def print_customer_menu() -> None:
     print("""\
-1. Créer un compte bancaire
-2. Déposer de l'argent
-3. Retirer de l'argent
-4. Faire un virement
-5. Voir l'historique d'un compte
+1. Consulter mes comptes
+2. Créer un compte bancaire
+3. Déposer de l'argent
+4. Retirer de l'argent
+5. Faire un virement
+6. Voir l'historique d'un compte
 0. Se déconnecter""")
 
 
@@ -115,20 +116,28 @@ def show_history_menu(bank: Bank) -> None:
         print(operation)
 
 
+def show_accounts_menu(bank,customer_email):
+    accounts = bank.list_customer_accounts(customer_email)
+    for account in accounts:
+        print(account)
+
+
 def show_customer_menu(bank: Bank, customer_email: str) -> None:
     while True:
         print_customer_menu()
         choice = input("Votre choix: ").strip()
-
+        
         if choice == "1":
-            show_create_account_menu(bank, customer_email)
+            show_accounts_menu(bank, customer_email)
         elif choice == "2":
-            show_deposit_menu(bank)
+            show_create_account_menu(bank, customer_email)
         elif choice == "3":
-            show_withdraw_menu(bank)
+            show_deposit_menu(bank)
         elif choice == "4":
-            show_transfer_menu(bank)
+            show_withdraw_menu(bank)
         elif choice == "5":
+            show_transfer_menu(bank)
+        elif choice == "6":
             show_history_menu(bank)
         elif choice == "0":
             print("Déconnexion.")

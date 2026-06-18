@@ -42,7 +42,7 @@ class AccountDao:
 
     def find_by_customer(self, customer):
         account_docs = self.collection.find({
-            "email": customer.email
+            "customerId": customer.id
         })
 
         accounts = []
