@@ -74,3 +74,6 @@ class Bank:
         self.operation_dao.delete_all()
         self.account_dao.delete_all()
         self.customer_dao.delete_all()
+
+    def search_customer(self, search_term):
+        return self.customer_dao.search_customer(search_term)

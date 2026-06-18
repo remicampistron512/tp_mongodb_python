@@ -61,3 +61,12 @@ class CustomerDao:
 
     def delete_all(self) -> None:
         self.collection.delete_many({})
+
+    def search_customer(self, search_term: str):
+        return list(self.collection.find({
+            "$or": [
+                {"firstName": {"$regex": search_term, "$options": "i"}},
+                {"lastName": {"$regex": search_term, "$options": "i"}},
+                {"email": {"$regex": search_term, "$options": "i"}},
+            ]
+        }))

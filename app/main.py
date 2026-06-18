@@ -7,6 +7,8 @@ def print_menu() -> None:
     print("""\
 1. Se connecter
 2. Créer un client
+3. Rechercher un client
+4. Gérer les clients
 0. Quitter""")
 
 
@@ -116,7 +118,7 @@ def show_history_menu(bank: Bank) -> None:
         print(operation)
 
 
-def show_accounts_menu(bank,customer_email):
+def show_accounts_menu(bank, customer_email):
     accounts = bank.list_customer_accounts(customer_email)
     for account in accounts:
         print(account)
@@ -126,7 +128,7 @@ def show_customer_menu(bank: Bank, customer_email: str) -> None:
     while True:
         print_customer_menu()
         choice = input("Votre choix: ").strip()
-        
+
         if choice == "1":
             show_accounts_menu(bank, customer_email)
         elif choice == "2":
@@ -166,6 +168,13 @@ Bienvenue dans l'application Bank
             show_login_menu(bank)
         elif choice == "2":
             show_create_user_menu(bank)
+        elif choice == "3":
+            search_term = input("Personne à rechercher: ").strip()
+            search_results = bank.search_customer(search_term)
+            if search_results:
+                print(bank.search_customer(search_term))
+            else:
+                print('aucun résultat')
         elif choice.upper() == "D" and dev:
             confirm = input(
                 "ATTENTION: cette action va réinitialiser les données. "
