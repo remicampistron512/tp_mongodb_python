@@ -25,6 +25,8 @@ def print_customer_menu() -> None:
 4. Retirer de l'argent
 5. Faire un virement
 6. Voir l'historique d'un compte
+7. Supprimer un compte
+8. Modifier un compte
 0. Se déconnecter""")
 
 
@@ -125,28 +127,50 @@ def show_accounts_menu(bank, customer_email):
         print(account)
 
 
+def show_delete_account_menu(bank):
+    pass
+
+
+def show_modify_account_menu(bank):
+    pass
+
+
 def show_customer_menu(bank: Bank, customer_email: str) -> None:
     while True:
         print_customer_menu()
         choice = input("Votre choix: ").strip()
 
-        if choice == "1":
-            show_accounts_menu(bank, customer_email)
-        elif choice == "2":
-            show_create_account_menu(bank, customer_email)
-        elif choice == "3":
-            show_deposit_menu(bank)
-        elif choice == "4":
-            show_withdraw_menu(bank)
-        elif choice == "5":
-            show_transfer_menu(bank)
-        elif choice == "6":
-            show_history_menu(bank)
-        elif choice == "0":
-            print("Déconnexion.")
-            break
-        else:
-            print("Choix invalide.")
+        match choice:
+            case "1":
+                show_accounts_menu(bank, customer_email)
+
+            case "2":
+                show_create_account_menu(bank, customer_email)
+
+            case "3":
+                show_deposit_menu(bank)
+
+            case "4":
+                show_withdraw_menu(bank)
+
+            case "5":
+                show_transfer_menu(bank)
+
+            case "6":
+                show_history_menu(bank)
+
+            case "7":
+                show_delete_account_menu(bank)
+
+            case "8":
+                show_modify_account_menu(bank)
+
+            case "0":
+                print("Déconnexion.")
+                break
+
+            case _:
+                print("Choix invalide.")
 
 
 def show_modify_user_menu(bank):
@@ -209,37 +233,46 @@ Bienvenue dans l'application Bank
 
         choice = input("Votre choix: ").strip()
 
-        if choice == "1":
-            show_login_menu(bank)
-        elif choice == "2":
-            show_create_user_menu(bank)
-        elif choice == "3":
-            search_term = input("Personne à rechercher: ").strip()
-            search_results = bank.search_customer(search_term)
-            if search_results:
-                print(bank.search_customer(search_term))
-            else:
-                print('aucun résultat')
-        elif choice == "4":
-            show_modify_user_menu(bank)
-        elif choice == "5":
-            show_delete_user_menu(bank)
-        elif choice.upper() == "D" and dev:
-            confirm = input(
-                "ATTENTION: cette action va réinitialiser les données. "
-                "Confirmer ? (o/N) : "
-            ).strip().lower()
+        match choice:
+            case "1":
+                show_login_menu(bank)
 
-            if confirm == "o":
-                bank.reset_data()
-                print("Réinitialisation effectuée.")
-            else:
-                print("Réinitialisation annulée.")
-        elif choice == "0":
-            print("Au revoir.")
-            break
-        else:
-            print("Choix invalide.")
+            case "2":
+                show_create_user_menu(bank)
+
+            case "3":
+                search_term = input("Personne à rechercher : ").strip()
+                search_results = bank.search_customer(search_term)
+
+                if search_results:
+                    print(search_results)
+                else:
+                    print("Aucun résultat.")
+
+            case "4":
+                show_modify_user_menu(bank)
+
+            case "5":
+                show_delete_user_menu(bank)
+
+            case "D" | "d" if dev:
+                confirm = input(
+                    "ATTENTION: cette action va réinitialiser les données. "
+                    "Confirmer ? (o/N) : "
+                ).strip().lower()
+
+                if confirm == "o":
+                    bank.reset_data()
+                    print("Réinitialisation effectuée.")
+                else:
+                    print("Réinitialisation annulée.")
+
+            case "0":
+                print("Au revoir.")
+                break
+
+            case _:
+                print("Choix invalide.")
 
 
 if __name__ == "__main__":
