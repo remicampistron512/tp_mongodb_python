@@ -16,3 +16,4 @@ class Customer:
             f"{self.first_name} {self.last_name} \n"
             f"{self.email}"
         )
+

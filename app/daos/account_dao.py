@@ -95,3 +95,4 @@ class AccountDao:
 
     def delete_all(self) -> None:
         self.collection.delete_many({})
+

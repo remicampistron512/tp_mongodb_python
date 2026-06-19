@@ -4,13 +4,6 @@ from app.daos.operation_dao import OperationDao
 
 
 class Bank:
-    """
-    Business facade for the bank application.
-
-    This class does not access storage directly. It only delegates to DAO
-    classes. The DAO methods are intentionally empty so you can implement
-    the database logic yourself.
-    """
 
     def __init__(
             self,

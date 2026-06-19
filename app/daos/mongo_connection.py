@@ -8,3 +8,4 @@ class MongoConnection:
     customers = database["customers"]
     accounts = database["accounts"]
     operations = database["operations"]
+
