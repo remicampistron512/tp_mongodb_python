@@ -77,3 +77,8 @@ class Bank:
 
     def search_customer(self, search_term):
         return self.customer_dao.search_customer(search_term)
+
+    def update_customer(self,customer):
+        return self.customer_dao.update(customer)
+    def delete_customer(self,email):
+        return self.customer_dao.delete(email)

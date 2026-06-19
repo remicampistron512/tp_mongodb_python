@@ -8,7 +8,8 @@ def print_menu() -> None:
 1. Se connecter
 2. Créer un client
 3. Rechercher un client
-4. Gérer les clients
+4. Modifier un client
+5. Supprimer un client
 0. Quitter""")
 
 
@@ -148,6 +149,50 @@ def show_customer_menu(bank: Bank, customer_email: str) -> None:
             print("Choix invalide.")
 
 
+def show_modify_user_menu(bank):
+    for customer in bank.list_customers():
+        print(customer)
+    email = input("Entrez le mail du client: ").strip()
+    if email:
+        customer = bank.find_customer_by_email(email)
+        print(f"Vous avez sélectionné : {customer}")
+        customer.first_name = input("Entrez le nouveau prénom: ").strip()
+        customer.last_name = input("Entrez le nouveau nom: ").strip()
+        customer.new_email = input("Entrez le nouvel email").strip()
+        if bank.update_customer(customer):
+            print("Le client a bien été modifié")
+        else:
+            print("erreur")
+
+
+def show_delete_user_menu(bank):
+    for customer in bank.list_customers():
+        print(customer)
+
+    email = input("Entrez le mail du client : ").strip()
+
+    if not email:
+        print("Aucun email saisi.")
+    else:
+        customer = bank.find_customer_by_email(email)
+
+        if customer is None:
+            print("Aucun client trouvé avec cet email.")
+        else:
+            print(f"Voulez-vous supprimer : {customer} ?")
+            choice = input("Oui/Non : ").strip().lower()
+
+            if choice in ("o", "oui"):
+                bank.delete_customer(customer.email)
+                print("Client supprimé !")
+
+            elif choice in ("n", "non"):
+                print("Annulation !")
+
+            else:
+                print("Réponse invalide. Suppression annulée.")
+
+
 def main(dev: bool = False) -> None:
     print("""\
 --------------------------
@@ -175,6 +220,10 @@ Bienvenue dans l'application Bank
                 print(bank.search_customer(search_term))
             else:
                 print('aucun résultat')
+        elif choice == "4":
+            show_modify_user_menu(bank)
+        elif choice == "5":
+            show_delete_user_menu(bank)
         elif choice.upper() == "D" and dev:
             confirm = input(
                 "ATTENTION: cette action va réinitialiser les données. "

@@ -33,6 +33,7 @@ class CustomerDao:
 
         for customer_doc in customer_docs:
             customer = Customer(
+                id = customer_doc["_id"],
                 first_name=customer_doc["firstName"],
                 last_name=customer_doc["lastName"],
                 email=customer_doc["email"],
@@ -49,7 +50,7 @@ class CustomerDao:
                 "$set": {
                     "firstName": customer.first_name,
                     "lastName": customer.last_name,
-                    "email": customer.email,
+                    "email": customer.new_email,
                 }
             }
         )
