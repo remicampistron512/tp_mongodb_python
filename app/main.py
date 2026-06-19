@@ -9,6 +9,15 @@ INVALID_AMOUNT_MSG = "Montant invalide"
 
 
 def print_menu() -> None:
+    """
+    Affiche le menu principal de l'application.
+
+    Args:
+        Aucun.
+
+    Returns:
+        None.
+    """
     print("""\
 1. Se connecter
 2. Créer un client
@@ -19,10 +28,28 @@ def print_menu() -> None:
 
 
 def print_dev_menu() -> None:
+    """
+    Affiche le menu réservé au mode développement.
+
+    Args:
+        Aucun.
+
+    Returns:
+        None.
+    """
     print("D. Réinitialiser les données")
 
 
 def print_customer_menu() -> None:
+    """
+    Affiche le menu disponible pour un client connecté.
+
+    Args:
+        Aucun.
+
+    Returns:
+        None.
+    """
     print("""\
 1. Consulter mes comptes
 2. Créer un compte bancaire
@@ -37,6 +64,15 @@ D. Réinitialiser les données
 
 
 def read_decimal(message: str) -> Decimal:
+    """
+    Demande à l'utilisateur de saisir un montant valide.
+
+    Args:
+        message: Message affiché lors de la saisie.
+
+    Returns:
+        Le montant saisi sous forme de Decimal.
+    """
     while True:
         value = input(message).strip().replace(",", ".")
 
@@ -53,6 +89,15 @@ def read_decimal(message: str) -> Decimal:
 
 
 def show_login_menu(bank: Bank) -> None:
+    """
+    Connecte un client à partir de son adresse email.
+
+    Args:
+        bank: Objet principal permettant d'accéder aux services bancaires.
+
+    Returns:
+        None.
+    """
     email = input("Email du client: ").strip()
     customer = bank.find_customer_by_email(email)
 
@@ -65,6 +110,15 @@ def show_login_menu(bank: Bank) -> None:
 
 
 def show_create_user_menu(bank: Bank) -> None:
+    """
+    Demande les informations nécessaires et crée un nouveau client.
+
+    Args:
+        bank: Objet principal permettant de gérer les clients.
+
+    Returns:
+        None.
+    """
     first_name = input("Prénom: ").strip()
     last_name = input("Nom: ").strip()
     email = input("Email: ").strip()
@@ -74,6 +128,16 @@ def show_create_user_menu(bank: Bank) -> None:
 
 
 def show_create_account_menu(bank: Bank, customer_email: str) -> None:
+    """
+    Crée un compte bancaire pour le client connecté.
+
+    Args:
+        bank: Objet principal permettant de gérer les comptes.
+        customer_email: Email du client propriétaire du compte.
+
+    Returns:
+        None.
+    """
     account_number = input(ACCOUNT_NUMBER_MSG).strip()
     overdraft_limit = read_decimal("Découvert autorisé: ")
     daily_withdrawal_limit = read_decimal("Limite de retrait journalière: ")
@@ -89,6 +153,15 @@ def show_create_account_menu(bank: Bank, customer_email: str) -> None:
 
 
 def show_deposit_menu(bank: Bank) -> None:
+    """
+    Effectue un dépôt sur un compte bancaire.
+
+    Args:
+        bank: Objet principal permettant de gérer les opérations.
+
+    Returns:
+        None.
+    """
     account_number = input(ACCOUNT_NUMBER_MSG).strip()
     amount = read_decimal("Montant à déposer: ")
 
@@ -97,6 +170,15 @@ def show_deposit_menu(bank: Bank) -> None:
 
 
 def show_withdraw_menu(bank: Bank) -> None:
+    """
+    Effectue un retrait sur un compte bancaire.
+
+    Args:
+        bank: Objet principal permettant de gérer les opérations.
+
+    Returns:
+        None.
+    """
     account_number = input(ACCOUNT_NUMBER_MSG).strip()
     amount = read_decimal("Montant à retirer: ")
 
@@ -105,6 +187,15 @@ def show_withdraw_menu(bank: Bank) -> None:
 
 
 def show_transfer_menu(bank: Bank) -> None:
+    """
+    Effectue un virement entre deux comptes bancaires.
+
+    Args:
+        bank: Objet principal permettant de gérer les opérations.
+
+    Returns:
+        None.
+    """
     source_account_number = input("Numéro du compte source: ").strip()
     target_account_number = input("Numéro du compte cible: ").strip()
     amount = read_decimal("Montant à transférer: ")
@@ -114,6 +205,15 @@ def show_transfer_menu(bank: Bank) -> None:
 
 
 def show_history_menu(bank: Bank) -> None:
+    """
+    Affiche l'historique des opérations d'un compte.
+
+    Args:
+        bank: Objet principal permettant de récupérer les opérations.
+
+    Returns:
+        None.
+    """
     account_number = input(ACCOUNT_NUMBER_MSG).strip()
     operations = bank.get_account_history(account_number)
 
@@ -128,12 +228,32 @@ def show_history_menu(bank: Bank) -> None:
 
 
 def show_accounts_menu(bank, customer_email):
+    """
+    Affiche les comptes bancaires d'un client.
+
+    Args:
+        bank: Objet principal permettant de récupérer les comptes.
+        customer_email: Email du client connecté.
+
+    Returns:
+        None.
+    """
     accounts = bank.list_customer_accounts(customer_email)
     for account in accounts:
         print(account)
 
 
 def show_delete_account_menu(bank: Bank, customer_email):
+    """
+    Supprime un compte bancaire après confirmation de l'utilisateur.
+
+    Args:
+        bank: Objet principal permettant de gérer les comptes.
+        customer_email: Email du client connecté.
+
+    Returns:
+        None.
+    """
     for account in bank.list_customer_accounts(customer_email):
         print(account)
 
@@ -165,6 +285,16 @@ def show_delete_account_menu(bank: Bank, customer_email):
 
 
 def show_modify_account_menu(bank: Bank, customer_email):
+    """
+    Modifie les informations d'un compte bancaire.
+
+    Args:
+        bank: Objet principal permettant de gérer les comptes.
+        customer_email: Email du client connecté.
+
+    Returns:
+        None.
+    """
     for account in bank.list_customer_accounts(customer_email):
         print(account)
 
@@ -249,6 +379,16 @@ def show_modify_account_menu(bank: Bank, customer_email):
 
 
 def show_customer_menu(bank: Bank, customer_email: str) -> None:
+    """
+    Affiche et gère le menu d'un client connecté.
+
+    Args:
+        bank: Objet principal permettant d'exécuter les actions bancaires.
+        customer_email: Email du client connecté.
+
+    Returns:
+        None.
+    """
     while True:
         print_customer_menu()
         choice = input("Votre choix: ").strip()
@@ -287,15 +427,27 @@ def show_customer_menu(bank: Bank, customer_email: str) -> None:
 
 
 def show_modify_user_menu(bank):
+    """
+    Modifie les informations d'un client existant.
+
+    Args:
+        bank: Objet principal permettant de gérer les clients.
+
+    Returns:
+        None.
+    """
     for customer in bank.list_customers():
         print(customer)
+
     email = input("Entrez le mail du client: ").strip()
+
     if email:
         customer = bank.find_customer_by_email(email)
         print(f"Vous avez sélectionné : {customer}")
         customer.first_name = input("Entrez le nouveau prénom: ").strip()
         customer.last_name = input("Entrez le nouveau nom: ").strip()
         customer.new_email = input("Entrez le nouvel email").strip()
+
         if bank.update_customer(customer):
             print("Le client a bien été modifié")
         else:
@@ -303,6 +455,15 @@ def show_modify_user_menu(bank):
 
 
 def show_delete_user_menu(bank):
+    """
+    Supprime un client après confirmation de l'utilisateur.
+
+    Args:
+        bank: Objet principal permettant de gérer les clients.
+
+    Returns:
+        None.
+    """
     for customer in bank.list_customers():
         print(customer)
 
@@ -331,6 +492,15 @@ def show_delete_user_menu(bank):
 
 
 def main(dev: bool = False) -> None:
+    """
+    Lance l'application et affiche le menu principal.
+
+    Args:
+        dev: Active ou non le mode développement.
+
+    Returns:
+        None.
+    """
     print("""\
 --------------------------
 Bienvenue dans l'application Bank
@@ -375,7 +545,6 @@ Bienvenue dans l'application Bank
                 ).strip().lower()
 
                 if confirm == "o":
-
                     dummy_service = DummyDataService(bank)
                     dummy_service.generate()
                     print("Données de test générées.")
@@ -393,3 +562,4 @@ Bienvenue dans l'application Bank
 
 if __name__ == "__main__":
     main(True)
+
