@@ -75,11 +75,12 @@ class AccountDao:
 
         return accounts
 
-    def update(self, account):
+    def update(self, old_account_number, account):
         self.collection.update_one(
-            {"account_number": account.account_number},
+            {"account_number": old_account_number},
             {
                 "$set": {
+                    "account_number": account.account_number,
                     "balance": str(account.balance),
                     "overdraft_limit": str(account.overdraft_limit),
                     "daily_withdrawal_limit": str(account.daily_withdrawal_limit),

@@ -13,10 +13,10 @@ class Bank:
     """
 
     def __init__(
-        self,
-        customer_dao: CustomerDao | None = None,
-        account_dao: AccountDao | None = None,
-        operation_dao: OperationDao | None = None,
+            self,
+            customer_dao: CustomerDao | None = None,
+            account_dao: AccountDao | None = None,
+            operation_dao: OperationDao | None = None,
     ) -> None:
         self.customer_dao = customer_dao or CustomerDao()
         self.account_dao = account_dao or AccountDao()
@@ -32,11 +32,11 @@ class Bank:
         return self.customer_dao.find_all()
 
     def create_account(
-        self,
-        customer_email: str,
-        account_number: str,
-        overdraft_limit,
-        daily_withdrawal_limit,
+            self,
+            customer_email: str,
+            account_number: str,
+            overdraft_limit,
+            daily_withdrawal_limit,
     ):
         customer = self.customer_dao.find_by_email(customer_email)
         return self.account_dao.create(
@@ -78,7 +78,14 @@ class Bank:
     def search_customer(self, search_term):
         return self.customer_dao.search_customer(search_term)
 
-    def update_customer(self,customer):
+    def update_customer(self, customer):
         return self.customer_dao.update(customer)
-    def delete_customer(self,email):
+
+    def delete_customer(self, email):
         return self.customer_dao.delete(email)
+
+    def delete_account(self, account):
+        return self.account_dao.delete(account.account_number)
+
+    def update_account(self, old_account_number, account):
+        return self.account_dao.update(old_account_number, account)

@@ -2,6 +2,10 @@ from decimal import Decimal, InvalidOperation
 
 from business.bank import Bank
 
+INVALID_CHOICE_MSG = "Choix invalide"
+ACCOUNT_NUMBER_MSG = "Numéro de compte"
+INVALID_AMOUNT_MSG = "Montant invalide"
+
 
 def print_menu() -> None:
     print("""\
@@ -43,7 +47,7 @@ def read_decimal(message: str) -> Decimal:
                 return amount
 
         except InvalidOperation:
-            print("Montant invalide.")
+            print(INVALID_AMOUNT_MSG)
 
 
 def show_login_menu(bank: Bank) -> None:
@@ -68,7 +72,7 @@ def show_create_user_menu(bank: Bank) -> None:
 
 
 def show_create_account_menu(bank: Bank, customer_email: str) -> None:
-    account_number = input("Numéro du compte: ").strip()
+    account_number = input(ACCOUNT_NUMBER_MSG).strip()
     overdraft_limit = read_decimal("Découvert autorisé: ")
     daily_withdrawal_limit = read_decimal("Limite de retrait journalière: ")
 
@@ -83,7 +87,7 @@ def show_create_account_menu(bank: Bank, customer_email: str) -> None:
 
 
 def show_deposit_menu(bank: Bank) -> None:
-    account_number = input("Numéro du compte: ").strip()
+    account_number = input(ACCOUNT_NUMBER_MSG).strip()
     amount = read_decimal("Montant à déposer: ")
 
     bank.deposit(account_number, amount)
@@ -91,7 +95,7 @@ def show_deposit_menu(bank: Bank) -> None:
 
 
 def show_withdraw_menu(bank: Bank) -> None:
-    account_number = input("Numéro du compte: ").strip()
+    account_number = input(ACCOUNT_NUMBER_MSG).strip()
     amount = read_decimal("Montant à retirer: ")
 
     bank.withdraw(account_number, amount)
@@ -108,7 +112,7 @@ def show_transfer_menu(bank: Bank) -> None:
 
 
 def show_history_menu(bank: Bank) -> None:
-    account_number = input("Numéro du compte: ").strip()
+    account_number = input(ACCOUNT_NUMBER_MSG).strip()
     operations = bank.get_account_history(account_number)
 
     if not operations:
@@ -127,12 +131,119 @@ def show_accounts_menu(bank, customer_email):
         print(account)
 
 
-def show_delete_account_menu(bank):
-    pass
+def show_delete_account_menu(bank: Bank, customer_email):
+    for account in bank.list_customer_accounts(customer_email):
+        print(account)
+
+    account_number = input("Entrez le numéro du compte à supprimer : ").strip()
+
+    if not account_number:
+        print("Aucun numéro de compte saisi.")
+        return
+
+    account = bank.find_account(account_number)
+
+    if account is None:
+        print("Aucun compte trouvé avec ce numéro.")
+        return
+
+    print(f"Voulez-vous supprimer le compte : {account} ?")
+    choice = input("Oui/Non : ").strip().lower()
+
+    match choice:
+        case "o" | "oui":
+            bank.delete_account(account)
+            print("Compte supprimé !")
+
+        case "n" | "non":
+            print("Annulation !")
+
+        case _:
+            print("Réponse invalide. Suppression annulée.")
 
 
-def show_modify_account_menu(bank):
-    pass
+def show_modify_account_menu(bank: Bank, customer_email):
+    for account in bank.list_customer_accounts(customer_email):
+        print(account)
+
+    account_number = input("Entrez le numéro du compte à modifier : ").strip()
+
+    if not account_number:
+        print("Aucun numéro de compte saisi.")
+        return
+
+    account = bank.find_account(account_number)
+
+    if account is None:
+        print("Aucun compte trouvé avec ce numéro.")
+        return
+
+    old_account_number = account.account_number
+
+    print(f"Compte sélectionné : {account}")
+
+    print("\nQue voulez-vous modifier ?")
+    print("1. Numéro du compte")
+    print("2. Solde du compte")
+    print("3. Découvert autorisé")
+    print("4. Plafond de retrait")
+    print("0. Annuler")
+
+    choice = input("Votre choix : ").strip()
+
+    match choice:
+        case "1":
+            new_account_number = input("Nouveau numéro de compte : ").strip()
+
+            if not new_account_number:
+                print("Numéro invalide.")
+                return
+
+            existing_account = bank.find_account(new_account_number)
+
+            if existing_account is not None:
+                print("Un compte avec ce numéro existe déjà.")
+                return
+
+            account.account_number = new_account_number
+
+        case "2":
+            new_balance = input("Nouveau solde : ").strip()
+
+            try:
+                account.balance = Decimal(new_balance)
+            except InvalidOperation:
+                print("Solde invalide.")
+                return
+
+        case "3":
+            new_overdraft_limit = input("Nouveau découvert autorisé : ").strip()
+
+            try:
+                account.overdraft_limit = Decimal(new_overdraft_limit)
+            except InvalidOperation:
+                print(INVALID_AMOUNT_MSG)
+                return
+
+        case "4":
+            new_daily_withdrawal_limit = input("Nouveau plafond de retrait : ").strip()
+
+            try:
+                account.daily_withdrawal_limit = Decimal(new_daily_withdrawal_limit)
+            except InvalidOperation:
+                print(INVALID_AMOUNT_MSG)
+                return
+
+        case "0":
+            print("Modification annulée.")
+            return
+
+        case _:
+            print(INVALID_CHOICE_MSG)
+            return
+
+    bank.update_account(old_account_number, account)
+    print("Compte modifié avec succès !")
 
 
 def show_customer_menu(bank: Bank, customer_email: str) -> None:
@@ -160,17 +271,17 @@ def show_customer_menu(bank: Bank, customer_email: str) -> None:
                 show_history_menu(bank)
 
             case "7":
-                show_delete_account_menu(bank)
+                show_delete_account_menu(bank, customer_email)
 
             case "8":
-                show_modify_account_menu(bank)
+                show_modify_account_menu(bank, customer_email)
 
             case "0":
                 print("Déconnexion.")
                 break
 
             case _:
-                print("Choix invalide.")
+                print(INVALID_CHOICE_MSG)
 
 
 def show_modify_user_menu(bank):
