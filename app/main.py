@@ -1,11 +1,74 @@
 from decimal import Decimal, InvalidOperation
 
+from colorama import Fore, Style, init
+
 from business.bank import Bank
 from services.dummy_data_service import DummyDataService
+
+init(autoreset=True)
+
+SUCCESS = Fore.GREEN
+ERROR = Fore.RED
+WARNING = Fore.YELLOW
+INFO = Fore.CYAN
+TITLE = Fore.MAGENTA + Style.BRIGHT
+MENU = Fore.BLUE
 
 INVALID_CHOICE_MSG = "Choix invalide"
 ACCOUNT_NUMBER_MSG = "Numéro de compte"
 INVALID_AMOUNT_MSG = "Montant invalide"
+
+
+def print_success(message: str) -> None:
+    """
+    Affiche un message de réussite en vert.
+
+    Args:
+        message: Message à afficher.
+
+    Returns:
+        None.
+    """
+    print(f"{SUCCESS}{message}")
+
+
+def print_error(message: str) -> None:
+    """
+    Affiche un message d'erreur en rouge.
+
+    Args:
+        message: Message à afficher.
+
+    Returns:
+        None.
+    """
+    print(f"{ERROR}{message}")
+
+
+def print_warning(message: str) -> None:
+    """
+    Affiche un message d'avertissement en jaune.
+
+    Args:
+        message: Message à afficher.
+
+    Returns:
+        None.
+    """
+    print(f"{WARNING}{message}")
+
+
+def print_info(message: str) -> None:
+    """
+    Affiche un message d'information en cyan.
+
+    Args:
+        message: Message à afficher.
+
+    Returns:
+        None.
+    """
+    print(f"{INFO}{message}")
 
 
 def print_menu() -> None:
@@ -18,7 +81,7 @@ def print_menu() -> None:
     Returns:
         None.
     """
-    print("""\
+    print(f"""{MENU}\
 1. Se connecter
 2. Créer un client
 3. Rechercher un client
@@ -37,7 +100,7 @@ def print_dev_menu() -> None:
     Returns:
         None.
     """
-    print("D. Réinitialiser les données")
+    print(f"{WARNING}D. Réinitialiser les données")
 
 
 def print_customer_menu() -> None:
@@ -50,7 +113,7 @@ def print_customer_menu() -> None:
     Returns:
         None.
     """
-    print("""\
+    print(f"""{MENU}\
 1. Consulter mes comptes
 2. Créer un compte bancaire
 3. Déposer de l'argent
@@ -80,12 +143,12 @@ def read_decimal(message: str) -> Decimal:
             amount = Decimal(value)
 
             if amount <= 0:
-                print("Le montant doit être supérieur à 0.")
+                print_warning("Le montant doit être supérieur à 0.")
             else:
                 return amount
 
         except InvalidOperation:
-            print(INVALID_AMOUNT_MSG)
+            print_error(INVALID_AMOUNT_MSG)
 
 
 def show_login_menu(bank: Bank) -> None:
@@ -102,10 +165,10 @@ def show_login_menu(bank: Bank) -> None:
     customer = bank.find_customer_by_email(email)
 
     if customer is None:
-        print("Client introuvable.")
+        print_error("Client introuvable.")
         return
 
-    print(f"Bienvenue {customer.first_name} {customer.last_name}.")
+    print_success(f"Bienvenue {customer.first_name} {customer.last_name}.")
     show_customer_menu(bank, email)
 
 
@@ -124,7 +187,7 @@ def show_create_user_menu(bank: Bank) -> None:
     email = input("Email: ").strip()
 
     bank.create_customer(first_name, last_name, email)
-    print("Client créé.")
+    print_success("Client créé.")
 
 
 def show_create_account_menu(bank: Bank, customer_email: str) -> None:
@@ -149,7 +212,7 @@ def show_create_account_menu(bank: Bank, customer_email: str) -> None:
         daily_withdrawal_limit,
     )
 
-    print("Compte bancaire créé.")
+    print_success("Compte bancaire créé.")
 
 
 def show_deposit_menu(bank: Bank) -> None:
@@ -166,7 +229,7 @@ def show_deposit_menu(bank: Bank) -> None:
     amount = read_decimal("Montant à déposer: ")
 
     bank.deposit(account_number, amount)
-    print("Dépôt effectué.")
+    print_success("Dépôt effectué.")
 
 
 def show_withdraw_menu(bank: Bank) -> None:
@@ -183,7 +246,7 @@ def show_withdraw_menu(bank: Bank) -> None:
     amount = read_decimal("Montant à retirer: ")
 
     bank.withdraw(account_number, amount)
-    print("Retrait effectué.")
+    print_success("Retrait effectué.")
 
 
 def show_transfer_menu(bank: Bank) -> None:
@@ -201,7 +264,7 @@ def show_transfer_menu(bank: Bank) -> None:
     amount = read_decimal("Montant à transférer: ")
 
     bank.transfer(source_account_number, target_account_number, amount)
-    print("Virement effectué.")
+    print_success("Virement effectué.")
 
 
 def show_history_menu(bank: Bank) -> None:
@@ -218,10 +281,10 @@ def show_history_menu(bank: Bank) -> None:
     operations = bank.get_account_history(account_number)
 
     if not operations:
-        print("Aucune opération trouvée.")
+        print_warning("Aucune opération trouvée.")
         return
 
-    print("Historique des opérations:")
+    print_info("Historique des opérations:")
 
     for operation in operations:
         print(operation)
@@ -260,28 +323,28 @@ def show_delete_account_menu(bank: Bank, customer_email):
     account_number = input("Entrez le numéro du compte à supprimer : ").strip()
 
     if not account_number:
-        print("Aucun numéro de compte saisi.")
+        print_warning("Aucun numéro de compte saisi.")
         return
 
     account = bank.find_account(account_number)
 
     if account is None:
-        print("Aucun compte trouvé avec ce numéro.")
+        print_error("Aucun compte trouvé avec ce numéro.")
         return
 
-    print(f"Voulez-vous supprimer le compte : {account} ?")
+    print_warning(f"Voulez-vous supprimer le compte : {account} ?")
     choice = input("Oui/Non : ").strip().lower()
 
     match choice:
         case "o" | "oui":
             bank.delete_account(account)
-            print("Compte supprimé !")
+            print_success("Compte supprimé !")
 
         case "n" | "non":
-            print("Annulation !")
+            print_info("Annulation !")
 
         case _:
-            print("Réponse invalide. Suppression annulée.")
+            print_error("Réponse invalide. Suppression annulée.")
 
 
 def show_modify_account_menu(bank: Bank, customer_email):
@@ -301,25 +364,26 @@ def show_modify_account_menu(bank: Bank, customer_email):
     account_number = input("Entrez le numéro du compte à modifier : ").strip()
 
     if not account_number:
-        print("Aucun numéro de compte saisi.")
+        print_warning("Aucun numéro de compte saisi.")
         return
 
     account = bank.find_account(account_number)
 
     if account is None:
-        print("Aucun compte trouvé avec ce numéro.")
+        print_error("Aucun compte trouvé avec ce numéro.")
         return
 
     old_account_number = account.account_number
 
-    print(f"Compte sélectionné : {account}")
+    print_info(f"Compte sélectionné : {account}")
 
-    print("\nQue voulez-vous modifier ?")
-    print("1. Numéro du compte")
-    print("2. Solde du compte")
-    print("3. Découvert autorisé")
-    print("4. Plafond de retrait")
-    print("0. Annuler")
+    print(f"""{MENU}
+Que voulez-vous modifier ?
+1. Numéro du compte
+2. Solde du compte
+3. Découvert autorisé
+4. Plafond de retrait
+0. Annuler""")
 
     choice = input("Votre choix : ").strip()
 
@@ -328,13 +392,13 @@ def show_modify_account_menu(bank: Bank, customer_email):
             new_account_number = input("Nouveau numéro de compte : ").strip()
 
             if not new_account_number:
-                print("Numéro invalide.")
+                print_error("Numéro invalide.")
                 return
 
             existing_account = bank.find_account(new_account_number)
 
             if existing_account is not None:
-                print("Un compte avec ce numéro existe déjà.")
+                print_error("Un compte avec ce numéro existe déjà.")
                 return
 
             account.account_number = new_account_number
@@ -345,7 +409,7 @@ def show_modify_account_menu(bank: Bank, customer_email):
             try:
                 account.balance = Decimal(new_balance)
             except InvalidOperation:
-                print("Solde invalide.")
+                print_error("Solde invalide.")
                 return
 
         case "3":
@@ -354,7 +418,7 @@ def show_modify_account_menu(bank: Bank, customer_email):
             try:
                 account.overdraft_limit = Decimal(new_overdraft_limit)
             except InvalidOperation:
-                print(INVALID_AMOUNT_MSG)
+                print_error(INVALID_AMOUNT_MSG)
                 return
 
         case "4":
@@ -363,19 +427,19 @@ def show_modify_account_menu(bank: Bank, customer_email):
             try:
                 account.daily_withdrawal_limit = Decimal(new_daily_withdrawal_limit)
             except InvalidOperation:
-                print(INVALID_AMOUNT_MSG)
+                print_error(INVALID_AMOUNT_MSG)
                 return
 
         case "0":
-            print("Modification annulée.")
+            print_info("Modification annulée.")
             return
 
         case _:
-            print(INVALID_CHOICE_MSG)
+            print_error(INVALID_CHOICE_MSG)
             return
 
     bank.update_account(old_account_number, account)
-    print("Compte modifié avec succès !")
+    print_success("Compte modifié avec succès !")
 
 
 def show_customer_menu(bank: Bank, customer_email: str) -> None:
@@ -419,11 +483,11 @@ def show_customer_menu(bank: Bank, customer_email: str) -> None:
                 show_modify_account_menu(bank, customer_email)
 
             case "0":
-                print("Déconnexion.")
+                print_info("Déconnexion.")
                 break
 
             case _:
-                print(INVALID_CHOICE_MSG)
+                print_error(INVALID_CHOICE_MSG)
 
 
 def show_modify_user_menu(bank):
@@ -443,15 +507,20 @@ def show_modify_user_menu(bank):
 
     if email:
         customer = bank.find_customer_by_email(email)
-        print(f"Vous avez sélectionné : {customer}")
+
+        if customer is None:
+            print_error("Aucun client trouvé avec cet email.")
+            return
+
+        print_info(f"Vous avez sélectionné : {customer}")
         customer.first_name = input("Entrez le nouveau prénom: ").strip()
         customer.last_name = input("Entrez le nouveau nom: ").strip()
         customer.new_email = input("Entrez le nouvel email").strip()
 
         if bank.update_customer(customer):
-            print("Le client a bien été modifié")
+            print_success("Le client a bien été modifié.")
         else:
-            print("erreur")
+            print_error("Erreur lors de la modification du client.")
 
 
 def show_delete_user_menu(bank):
@@ -470,25 +539,25 @@ def show_delete_user_menu(bank):
     email = input("Entrez le mail du client : ").strip()
 
     if not email:
-        print("Aucun email saisi.")
+        print_warning("Aucun email saisi.")
     else:
         customer = bank.find_customer_by_email(email)
 
         if customer is None:
-            print("Aucun client trouvé avec cet email.")
+            print_error("Aucun client trouvé avec cet email.")
         else:
-            print(f"Voulez-vous supprimer : {customer} ?")
+            print_warning(f"Voulez-vous supprimer : {customer} ?")
             choice = input("Oui/Non : ").strip().lower()
 
             if choice in ("o", "oui"):
                 bank.delete_customer(customer.email)
-                print("Client supprimé !")
+                print_success("Client supprimé !")
 
             elif choice in ("n", "non"):
-                print("Annulation !")
+                print_info("Annulation !")
 
             else:
-                print("Réponse invalide. Suppression annulée.")
+                print_error("Réponse invalide. Suppression annulée.")
 
 
 def main(dev: bool = False) -> None:
@@ -501,7 +570,7 @@ def main(dev: bool = False) -> None:
     Returns:
         None.
     """
-    print("""\
+    print(f"""{TITLE}\
 --------------------------
 Bienvenue dans l'application Bank
 --------------------------""")
@@ -530,7 +599,7 @@ Bienvenue dans l'application Bank
                 if search_results:
                     print(search_results)
                 else:
-                    print("Aucun résultat.")
+                    print_warning("Aucun résultat.")
 
             case "4":
                 show_modify_user_menu(bank)
@@ -540,26 +609,25 @@ Bienvenue dans l'application Bank
 
             case "D" | "d" if dev:
                 confirm = input(
-                    "ATTENTION: cette action va réinitialiser les données. "
+                    f"{WARNING}ATTENTION: cette action va réinitialiser les données. "
                     "Confirmer ? (o/N) : "
                 ).strip().lower()
 
                 if confirm == "o":
                     dummy_service = DummyDataService(bank)
                     dummy_service.generate()
-                    print("Données de test générées.")
-                    print("Réinitialisation effectuée.")
+                    print_success("Données de test générées.")
+                    print_success("Réinitialisation effectuée.")
                 else:
-                    print("Réinitialisation annulée.")
+                    print_info("Réinitialisation annulée.")
 
             case "0":
-                print("Au revoir.")
+                print_info("Au revoir.")
                 break
 
             case _:
-                print("Choix invalide.")
+                print_error(INVALID_CHOICE_MSG)
 
 
 if __name__ == "__main__":
     main(True)
-
