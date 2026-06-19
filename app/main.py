@@ -1,6 +1,7 @@
 from decimal import Decimal, InvalidOperation
 
 from business.bank import Bank
+from services.dummy_data_service import DummyDataService
 
 INVALID_CHOICE_MSG = "Choix invalide"
 ACCOUNT_NUMBER_MSG = "Numéro de compte"
@@ -31,6 +32,7 @@ def print_customer_menu() -> None:
 6. Voir l'historique d'un compte
 7. Supprimer un compte
 8. Modifier un compte
+D. Réinitialiser les données
 0. Se déconnecter""")
 
 
@@ -373,7 +375,10 @@ Bienvenue dans l'application Bank
                 ).strip().lower()
 
                 if confirm == "o":
-                    bank.reset_data()
+
+                    dummy_service = DummyDataService(bank)
+                    dummy_service.generate()
+                    print("Données de test générées.")
                     print("Réinitialisation effectuée.")
                 else:
                     print("Réinitialisation annulée.")
